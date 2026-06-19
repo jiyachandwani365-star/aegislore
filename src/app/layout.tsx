@@ -1,3 +1,4 @@
+import { PHProvider } from "@/components/providers/posthog-provider";
 import { SiteFooter } from "@/components/layout/site-footer";
 import type { Metadata, Viewport } from "next";
 import { Cinzel, Inter } from "next/font/google";
@@ -46,7 +47,9 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
     <html lang="en" className="dark" suppressHydrationWarning>
       <body className={`${inter.variable} ${cinzel.variable}`}>
         <AppProviders>
-          {children}
+          <PHProvider>
+            {children}
+          </PHProvider>
         </AppProviders>
 
         <SiteFooter />
