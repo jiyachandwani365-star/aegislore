@@ -1,12 +1,12 @@
 import Link from "next/link";
-import { ArrowRight, Check, ChevronRight, Eye, Fingerprint, Gauge, LockKeyhole, Radar, ShieldCheck, Sparkles } from "lucide-react";
+import { ArrowRight, Check, ChevronRight, Eye, Fingerprint, Gauge, LockKeyhole, Radar, ShieldCheck } from "lucide-react";
 
+import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
 import { Reveal } from "@/components/motion/reveal";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
 
 const features = [
   {
@@ -63,8 +63,8 @@ function SectionHeading({
 }: Readonly<{ eyebrow: string; title: string; description: string }>) {
   return (
     <div className="mx-auto max-w-3xl text-center">
-      <p className="text-sm font-medium uppercase tracking-[0.18em] text-primary">{eyebrow}</p>
-      <h2 className="mt-3 text-heading-lg text-balance sm:text-4xl">{title}</h2>
+      <p className="text-caption font-medium uppercase tracking-[0.16em] text-primary">{eyebrow}</p>
+      <h2 className="mt-3 text-heading-lg font-semibold leading-tight text-balance sm:text-4xl">{title}</h2>
       <p className="mt-4 text-body-lg text-pretty text-muted-foreground">{description}</p>
     </div>
   );
@@ -79,14 +79,13 @@ export default function HomePage() {
           <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_top_left,hsl(var(--primary)/0.16),transparent_34%),radial-gradient(circle_at_80%_20%,hsl(var(--accent)/0.12),transparent_28%)]" />
           <div className="container grid min-h-[calc(100vh-4rem)] items-center gap-12 py-18 lg:grid-cols-[1.02fr_0.98fr]">
             <Reveal className="max-w-3xl">
-              <Badge variant="info" className="mb-5">
-                <Sparkles aria-hidden="true" />
+              <p className="text-caption font-medium uppercase tracking-[0.14em] text-primary">
                 Cybersecurity without fear
-              </Badge>
-              <h1 className="text-5xl font-semibold leading-none tracking-normal text-balance sm:text-6xl lg:text-display-lg">
+              </p>
+              <h1 className="mt-3 max-w-3xl text-5xl font-semibold leading-[1.03] tracking-tight text-balance sm:text-6xl lg:text-display-lg">
                 Understand your digital health in minutes.
               </h1>
-              <p className="mt-6 max-w-2xl text-body-lg text-pretty text-muted-foreground">
+              <p className="mt-6 max-w-2xl text-[1.06rem] leading-8 text-pretty text-muted-foreground">
                 AegisLore helps you check account safety, understand your score, and choose what to fix first.
               </p>
               <div className="mt-9 flex flex-col gap-3 sm:flex-row">
@@ -115,7 +114,7 @@ export default function HomePage() {
 
             <Reveal delay={0.12} className="relative">
               <div className="absolute -inset-6 -z-10 rounded-[2rem] bg-primary/10 blur-3xl" />
-              <Card variant="elevated" className="overflow-hidden">
+              <Card variant="default" className="overflow-hidden">
                 <div className="border-b bg-surface/70 px-5 py-4">
                   <div className="flex items-center justify-between gap-4">
                     <div>
@@ -166,9 +165,7 @@ export default function HomePage() {
             {features.map((feature) => (
               <Card key={feature.title} variant="interactive">
                 <CardHeader>
-                  <div className="mb-3 flex size-11 items-center justify-center rounded-lg bg-accent text-accent-foreground">
-                    <feature.icon aria-hidden="true" className="size-5" />
-                  </div>
+                  <feature.icon aria-hidden="true" className="mb-3 size-6 text-primary" />
                   <CardTitle className="text-xl">{feature.title}</CardTitle>
                   <CardDescription>{feature.description}</CardDescription>
                 </CardHeader>
@@ -186,11 +183,11 @@ export default function HomePage() {
             />
             <div className="mt-12 grid gap-5 lg:grid-cols-3">
               {steps.map((step, index) => (
-                <Card key={step.title} variant="elevated">
+                <Card key={step.title} variant="default">
                   <CardHeader>
-                    <div className="mb-6 flex size-12 items-center justify-center rounded-full bg-primary text-primary-foreground">
-                      {index + 1}
-                    </div>
+                    <p className="mb-4 text-caption font-medium uppercase tracking-[0.14em] text-primary">
+                      Step {index + 1}
+                    </p>
                     <CardTitle className="text-xl">{step.title}</CardTitle>
                     <CardDescription>{step.description}</CardDescription>
                   </CardHeader>
@@ -201,24 +198,7 @@ export default function HomePage() {
         </section>
       </main>
 
-      <footer className="border-t bg-background">
-        <div className="container flex flex-col justify-between gap-6 py-10 md:flex-row md:items-center">
-          <div>
-            <p className="font-semibold">AegisLore</p>
-            <p className="mt-2 text-sm text-muted-foreground">Digital health, without panic.</p>
-          </div>
-          <div className="flex flex-wrap gap-5 text-sm text-muted-foreground">
-            <Link className="hover:text-foreground" href="#features">
-              Features
-            </Link>
-            <Link className="hover:text-foreground" href="#how-it-works">
-              How it works
-            </Link>
-          </div>
-          <Separator className="md:hidden" />
-          <p className="text-sm text-muted-foreground">(c) 2026 AegisLore.</p>
-        </div>
-      </footer>
+      <SiteFooter />
     </div>
   );
 }

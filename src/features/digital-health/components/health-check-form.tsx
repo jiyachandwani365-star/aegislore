@@ -6,7 +6,7 @@ import { ArrowRight } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
@@ -41,12 +41,11 @@ export function HealthCheckForm({ focus }: Readonly<{ focus?: string }>) {
 
   return (
     <div className="grid gap-5 xl:grid-cols-[0.85fr_1.15fr]">
-      <Card variant="elevated">
-        <CardHeader>
-          <CardTitle>Health check</CardTitle>
-          <CardDescription>Answer a few plain questions to calculate your current score.</CardDescription>
+      <Card variant="default">
+        <CardHeader className="pb-4">
+          <CardTitle>Your answers</CardTitle>
         </CardHeader>
-        <CardContent className="grid gap-4">
+        <CardContent className="divide-y">
           <SettingSwitch
             checked={passwordReuse}
             description="Turn this on if you know the same password is used on more than one important account."
@@ -71,7 +70,7 @@ export function HealthCheckForm({ focus }: Readonly<{ focus?: string }>) {
             label="My email has broad exposure"
             onChange={setEmailExposure}
           />
-          <div className="rounded-lg border bg-background p-4">
+          <div className="py-4">
             <div className="flex items-center justify-between gap-4">
               <div>
                 <Label htmlFor="password-strength">Password strength</Label>
@@ -89,7 +88,7 @@ export function HealthCheckForm({ focus }: Readonly<{ focus?: string }>) {
               value={passwordStrength}
             />
           </div>
-          <div className="rounded-lg border bg-background p-4">
+          <div className="py-4">
             <Label htmlFor="device-security">Device security</Label>
             <p className="mt-1 text-sm text-muted-foreground">Choose the best current description.</p>
             <select
@@ -106,21 +105,19 @@ export function HealthCheckForm({ focus }: Readonly<{ focus?: string }>) {
         </CardContent>
       </Card>
 
-      <div className="space-y-5">
+      <div className="space-y-4">
         <ScoreBreakdown result={result} />
-        <Card>
-          <CardContent className="p-6">
-            <p className="text-sm leading-6 text-muted-foreground">
-              This breakdown is an estimate based on your answers. It is meant to help you choose the next practical step.
-            </p>
-          <Button asChild className="mt-6 w-full">
+        <div className="flex flex-col gap-3 border-t pt-4 sm:flex-row sm:items-center sm:justify-between">
+          <p className="text-sm leading-6 text-muted-foreground">
+            This breakdown is an estimate based on your answers.
+          </p>
+          <Button asChild className="w-full sm:w-auto">
             <Link href="/dashboard">
               Back to dashboard
               <ArrowRight aria-hidden="true" />
             </Link>
           </Button>
-          </CardContent>
-        </Card>
+        </div>
       </div>
     </div>
   );
@@ -133,7 +130,7 @@ function SettingSwitch({
   onChange
 }: Readonly<{ checked: boolean; description: string; label: string; onChange: (checked: boolean) => void }>) {
   return (
-    <div className="flex items-center justify-between gap-4 rounded-lg border bg-background p-4">
+    <div className="flex items-center justify-between gap-4 py-4">
       <div>
         <p className="font-medium">{label}</p>
         <p className="mt-1 text-sm leading-6 text-muted-foreground">{description}</p>

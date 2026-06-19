@@ -1,7 +1,8 @@
-import { Mail, UserRound } from "lucide-react";
+import { ArrowRight, Mail, UserRound } from "lucide-react";
+import Link from "next/link";
 
-import { AppHeader } from "@/components/layout/app-header";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { AppPageHeader, AppPageShell } from "@/components/layout/app-page";
+import { Button } from "@/components/ui/button";
 import { requireUser } from "@/server/auth/session";
 
 export const metadata = {
@@ -12,36 +13,37 @@ export default async function ProfilePage() {
   const user = await requireUser();
 
   return (
-    <div className="min-h-screen bg-background">
-      <AppHeader />
-      <main className="container max-w-3xl py-8">
-        <div className="mb-8">
-          <p className="text-sm text-muted-foreground">Account</p>
-          <h1 className="mt-2 text-3xl font-semibold tracking-normal">Profile</h1>
+    <AppPageShell className="max-w-3xl">
+      <AppPageHeader
+        action={
+          <Button asChild className="w-full sm:w-auto" variant="outline">
+            <Link href="/settings">
+              Account settings
+              <ArrowRight aria-hidden="true" />
+            </Link>
+          </Button>
+        }
+        description="Identity details from your sign-in method."
+        eyebrow="Account"
+        title="Profile"
+      />
+
+      <dl className="divide-y border-y">
+        <div className="flex gap-4 py-5">
+          <UserRound aria-hidden="true" className="mt-0.5 size-5 shrink-0 text-primary" />
+          <div>
+            <dt className="text-caption text-muted-foreground">Name</dt>
+            <dd className="mt-1 font-medium">{user.name ?? "Not provided"}</dd>
+          </div>
         </div>
-        <Card variant="elevated">
-          <CardHeader>
-            <CardTitle>Your identity</CardTitle>
-            <CardDescription>Profile information provided by your authentication method.</CardDescription>
-          </CardHeader>
-          <CardContent className="grid gap-4">
-            <div className="flex items-center gap-4 rounded-lg border bg-background p-4">
-              <UserRound aria-hidden="true" className="size-5 text-primary" />
-              <div>
-                <p className="text-sm text-muted-foreground">Name</p>
-                <p className="font-medium">{user.name ?? "Not provided"}</p>
-              </div>
-            </div>
-            <div className="flex items-center gap-4 rounded-lg border bg-background p-4">
-              <Mail aria-hidden="true" className="size-5 text-primary" />
-              <div>
-                <p className="text-sm text-muted-foreground">Email</p>
-                <p className="font-medium">{user.email ?? "Not provided"}</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </main>
-    </div>
+        <div className="flex gap-4 py-5">
+          <Mail aria-hidden="true" className="mt-0.5 size-5 shrink-0 text-primary" />
+          <div>
+            <dt className="text-caption text-muted-foreground">Email</dt>
+            <dd className="mt-1 font-medium">{user.email ?? "Not provided"}</dd>
+          </div>
+        </div>
+      </dl>
+    </AppPageShell>
   );
 }

@@ -21,7 +21,7 @@ export function RiskMeter({
   return (
     <div className="rounded-lg border bg-background p-4">
       <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
-        <div className="flex items-center gap-3">
+        <div className="flex min-w-0 items-center gap-3">
           <div
             className={cn(
               "flex size-10 items-center justify-center rounded-lg text-primary-foreground",
@@ -35,7 +35,9 @@ export function RiskMeter({
             <p className="text-2xl font-semibold">{riskLevel}</p>
           </div>
         </div>
-        <Badge variant={isSafe ? "success" : "warning"}>{confidenceScore}% confidence</Badge>
+        <Badge className="shrink-0 self-start sm:self-auto" variant={isSafe ? "success" : "warning"}>
+          {confidenceScore}% confidence
+        </Badge>
       </div>
       <div className="mt-4 h-3 rounded-full bg-muted" aria-hidden="true">
         <div className="h-3 rounded-full bg-primary" style={{ width: `${riskPercent[riskLevel]}%` }} />

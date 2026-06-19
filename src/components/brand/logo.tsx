@@ -11,7 +11,7 @@ export function Logo({ className }: Readonly<{ className?: string }>) {
         className
       )}
     >
-      <Image src="/aegislore-logo.png" alt="" width={36} height={36} priority className="size-9 object-cover" />
+      <Image src="/aegislore-logo.png" alt="" width={36} height={36} priority className="size-full object-cover" />
     </span>
   );
 }

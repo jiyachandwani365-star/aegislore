@@ -1,7 +1,6 @@
 import { CheckCircle2, CircleAlert } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { FindingEvidencePanel } from "@/features/digital-health/components/finding-evidence-panel";
 import { RecommendationCard } from "@/features/digital-health/components/recommendation-card";
 import { SecurityImpactPreview } from "@/features/digital-health/components/security-impact-preview";
@@ -12,60 +11,56 @@ export function SecurityFactorCard({ factor }: Readonly<{ factor: FactorResult }
   const Icon = isPositive ? CheckCircle2 : CircleAlert;
 
   return (
-    <Card variant={isPositive ? "default" : "elevated"}>
-      <CardHeader>
-        <div className="flex items-start justify-between gap-4">
-          <div className="flex gap-3">
-            <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-accent text-accent-foreground">
-              <Icon aria-hidden="true" className="size-5" />
-            </div>
-            <div>
-              <CardTitle className="text-xl">{factor.label}</CardTitle>
-              <CardDescription>{factor.explanation}</CardDescription>
-            </div>
+    <article className="py-5">
+      <div className="flex items-start justify-between gap-4">
+        <div className="flex min-w-0 gap-3">
+          <Icon aria-hidden="true" className="mt-0.5 size-5 shrink-0 text-primary" />
+          <div className="min-w-0">
+            <h3 className="font-medium">{factor.label}</h3>
+            <p className="mt-1 text-sm text-muted-foreground">{factor.explanation}</p>
           </div>
-          <Badge variant={isPositive ? "success" : "warning"}>{isPositive ? "Helps score" : "Lowers score"}</Badge>
         </div>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        <div className="grid gap-3 sm:grid-cols-3">
-          <Metric label="Contribution" value={`${factor.contribution}`} />
-          <Metric label="Factor score" value={`${factor.score}/100`} />
-          <Metric label="Confidence" value={`${Math.round(factor.confidence * 100)}%`} />
+        <Badge className="shrink-0" variant={isPositive ? "success" : "warning"}>
+          {isPositive ? "Helps score" : "Lowers score"}
+        </Badge>
+      </div>
+
+      <dl className="mt-4 grid gap-3 text-sm sm:grid-cols-3">
+        <Metric label="Contribution" value={`${factor.contribution}`} />
+        <Metric label="Factor score" value={`${factor.score}/100`} />
+        <Metric label="Confidence" value={`${Math.round(factor.confidence * 100)}%`} />
+      </dl>
+
+      <SecurityImpactPreview impactIfFixed={factor.impactIfFixed} potentialContribution={factor.potentialContribution} />
+
+      <div className="mt-4">
+        <h4 className="text-sm font-medium">Why this matters</h4>
+        <p className="mt-1 text-sm leading-6 text-muted-foreground">{factor.whyThisMatters}</p>
+      </div>
+
+      <FindingEvidencePanel evidence={factor.evidence} />
+
+      {factor.recommendations.length > 0 ? (
+        <div className="mt-4">
+          <h4 className="text-sm font-medium">Recommended action</h4>
+          <ul className="mt-2 divide-y">
+            {factor.recommendations.map((recommendation) => (
+              <li key={recommendation.id}>
+                <RecommendationCard recommendation={recommendation} />
+              </li>
+            ))}
+          </ul>
         </div>
-
-        <SecurityImpactPreview
-          impactIfFixed={factor.impactIfFixed}
-          potentialContribution={factor.potentialContribution}
-        />
-
-        <div className="rounded-lg border bg-background p-4">
-          <h3 className="font-medium">Why this matters</h3>
-          <p className="mt-2 text-sm leading-6 text-muted-foreground">{factor.whyThisMatters}</p>
-        </div>
-
-        <FindingEvidencePanel evidence={factor.evidence} />
-
-        {factor.recommendations.length > 0 ? (
-          <div className="rounded-lg border bg-background p-4">
-            <h3 className="mb-3 font-medium">Recommended action</h3>
-            <div className="space-y-3">
-              {factor.recommendations.map((recommendation) => (
-                <RecommendationCard key={recommendation.id} recommendation={recommendation} />
-              ))}
-            </div>
-          </div>
-        ) : null}
-      </CardContent>
-    </Card>
+      ) : null}
+    </article>
   );
 }
 
 function Metric({ label, value }: Readonly<{ label: string; value: string }>) {
   return (
-    <div className="rounded-lg border bg-background p-3">
-      <p className="text-caption text-muted-foreground">{label}</p>
-      <p className="mt-1 font-medium">{value}</p>
+    <div>
+      <dt className="text-caption text-muted-foreground">{label}</dt>
+      <dd className="mt-0.5 font-medium">{value}</dd>
     </div>
   );
 }

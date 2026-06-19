@@ -1,28 +1,36 @@
 "use client";
 
 import { Bell, CheckCircle2, Clock } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import type { NotificationFilters, NotificationItem, NotificationSeverity } from "@/features/notifications";
 
 const severityVariant = {
-  low: "success",
-  medium: "info",
-  high: "warning",
+  low: "subtle",
+  medium: "outline",
+  high: "destructive",
   critical: "destructive"
-} as const satisfies Record<NotificationSeverity, "success" | "info" | "warning" | "destructive">;
+} as const satisfies Record<NotificationSeverity, "subtle" | "outline" | "destructive">;
 
 export function NotificationList({
   filters,
   notifications
 }: Readonly<{ filters: NotificationFilters; notifications: NotificationItem[] }>) {
   const [items, setItems] = useState(notifications);
+
+  useEffect(() => {
+    setItems(notifications);
+  }, [notifications]);
+
   const visibleItems = useMemo(
     () =>
       items.filter((notification) => {
+        if (filters.severity !== "all" && notification.severity !== filters.severity) {
+          return false;
+        }
+
         if (filters.read === "read" && !notification.read) {
           return false;
         }
@@ -33,7 +41,7 @@ export function NotificationList({
 
         return true;
       }),
-    [filters.read, items]
+    [filters.read, filters.severity, items]
   );
 
   function toggleRead(id: string) {
@@ -50,11 +58,9 @@ export function NotificationList({
 
   if (visibleItems.length === 0) {
     return (
-      <div className="flex min-h-72 flex-col items-center justify-center rounded-lg border border-dashed bg-surface p-8 text-center">
-        <div className="mb-4 flex size-12 items-center justify-center rounded-full bg-background">
-          <Bell aria-hidden="true" className="size-6 text-muted-foreground" />
-        </div>
-        <h2 className="text-xl font-semibold">No notifications found</h2>
+      <div className="flex min-h-48 flex-col items-center justify-center border border-dashed py-12 text-center">
+        <Bell aria-hidden="true" className="size-6 text-muted-foreground" />
+        <h2 className="mt-4 text-heading-md">No notifications found</h2>
         <p className="mt-2 max-w-md text-sm leading-6 text-muted-foreground">
           Try a different filter, or check back after your next digital health review.
         </p>
@@ -63,24 +69,22 @@ export function NotificationList({
   }
 
   return (
-    <div className="space-y-3">
-      <div className="flex justify-end">
+    <div>
+      <div className="mb-4 flex justify-end">
         <Button onClick={markAllRead} size="sm" type="button" variant="outline">
           Mark all read
         </Button>
       </div>
-      {visibleItems.map((notification) => (
-        <Card key={notification.id} variant={notification.read ? "default" : "elevated"}>
-          <CardContent className="p-4">
+      <ul className="divide-y border-y">
+        {visibleItems.map((notification) => (
+          <li key={notification.id} className="py-5">
             <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
               <div className="flex gap-3">
-                <div className="mt-1 flex size-10 shrink-0 items-center justify-center rounded-lg bg-accent text-accent-foreground">
-                  {notification.read ? (
-                    <CheckCircle2 aria-hidden="true" className="size-5" />
-                  ) : (
-                    <Bell aria-hidden="true" className="size-5" />
-                  )}
-                </div>
+                {notification.read ? (
+                  <CheckCircle2 aria-hidden="true" className="mt-0.5 size-5 shrink-0 text-muted-foreground" />
+                ) : (
+                  <Bell aria-hidden="true" className="mt-0.5 size-5 shrink-0 text-primary" />
+                )}
                 <div>
                   <div className="flex flex-wrap items-center gap-2">
                     <h2 className="font-medium">{notification.title}</h2>
@@ -101,9 +105,9 @@ export function NotificationList({
                 </Button>
               </div>
             </div>
-          </CardContent>
-        </Card>
-      ))}
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }

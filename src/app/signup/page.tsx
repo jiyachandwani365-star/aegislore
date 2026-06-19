@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 
+import { AuthPageShell } from "@/components/layout/auth-page-shell";
 import { AuthCard } from "@/features/auth/components/auth-card";
 import { authProviderStatus } from "@/features/auth/config";
 import { auth } from "@/server/auth";
@@ -20,13 +21,13 @@ export default async function SignupPage({
   const params = await searchParams;
 
   return (
-    <main className="flex min-h-screen items-center justify-center px-4 py-12">
+    <AuthPageShell>
       <AuthCard
-        mode="sign-up"
-        hasGoogleProvider={authProviderStatus.google}
-        hasEmailProvider={authProviderStatus.email}
         error={params.error}
+        hasEmailProvider={authProviderStatus.email}
+        hasGoogleProvider={authProviderStatus.google}
+        mode="sign-up"
       />
-    </main>
+    </AuthPageShell>
   );
 }

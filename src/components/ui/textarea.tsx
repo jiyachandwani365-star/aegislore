@@ -1,3 +1,5 @@
+"use client";
+
 import type { TextareaHTMLAttributes } from "react";
 import { forwardRef } from "react";
 

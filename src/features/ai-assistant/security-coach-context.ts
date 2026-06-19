@@ -24,7 +24,7 @@ export function getSecurityCoachContext(): SecurityCoachContext {
     emailExposure: true,
     deviceSecurity: "unknown"
   });
-  const journey = getSecurityJourneySnapshot();
+  const journey = getSecurityJourneySnapshot(scoreResult.score);
   const activeFindings = scoreResult.factors.filter((factor) => factor.status === "negative");
   const completedFixes = [...journey.issuesFixed, ...journey.accountImprovements].sort(
     (first, second) => new Date(second.date).getTime() - new Date(first.date).getTime()

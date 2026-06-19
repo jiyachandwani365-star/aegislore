@@ -18,17 +18,15 @@ export function AchievementSystem({
         <CardDescription>Milestone badges and steady progress tracking.</CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
-        <div className="rounded-lg border bg-background p-4">
-          <div className="flex items-center gap-3">
-            <div className="flex size-10 items-center justify-center rounded-lg bg-secondary text-secondary-foreground">
-              <Flame aria-hidden="true" className="size-5" />
-            </div>
-            <div>
-              <p className="font-medium">{streak.currentDays}-day streak</p>
-              <p className="text-sm text-muted-foreground">
-                Best streak: {streak.bestDays} days. Last activity: {streak.lastActivityDate}.
-              </p>
-            </div>
+        <div className="flex items-center gap-3 rounded-lg border bg-background p-4">
+          <div className="flex size-10 items-center justify-center rounded-lg bg-secondary text-secondary-foreground">
+            <Flame aria-hidden="true" className="size-5" />
+          </div>
+          <div>
+            <p className="font-medium">{streak.currentDays}-day streak</p>
+            <p className="text-sm text-muted-foreground">
+              Best streak: {streak.bestDays} days. Last activity: {streak.lastActivityDate}.
+            </p>
           </div>
         </div>
 

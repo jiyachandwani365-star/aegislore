@@ -1,8 +1,4 @@
-import { Bell } from "lucide-react";
-
-import { AppHeader } from "@/components/layout/app-header";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { AppPageHeader, AppPageShell } from "@/components/layout/app-page";
 import { NotificationFilterTabs } from "@/features/notifications/components/notification-filter-tabs";
 import { NotificationList } from "@/features/notifications/components/notification-list";
 import { getNotificationService, parseNotificationFilters } from "@/features/notifications";
@@ -22,41 +18,24 @@ export default async function NotificationsPage({
   const unreadCount = notifications.filter((notification) => !notification.read).length;
 
   return (
-    <div className="min-h-screen bg-background">
-      <AppHeader />
-      <main className="container py-8">
-        <div className="mb-8 flex flex-col justify-between gap-5 lg:flex-row lg:items-end">
-          <div>
-            <Badge variant="info" className="mb-4">
-              <Bell aria-hidden="true" />
-              Alert history
-            </Badge>
-            <h1 className="text-3xl font-semibold tracking-normal sm:text-4xl">Notifications</h1>
-            <p className="mt-3 max-w-2xl text-body text-muted-foreground">
-              A clear history of alerts, updates, and recommended reviews.
-            </p>
-          </div>
-          <Card className="w-full lg:w-72" variant="elevated">
-            <CardHeader className="pb-3">
-              <CardDescription>Unread</CardDescription>
-              <CardTitle>{unreadCount}</CardTitle>
-            </CardHeader>
-          </Card>
-        </div>
+    <AppPageShell>
+      <AppPageHeader
+        description={
+          unreadCount > 0
+            ? `${unreadCount} unread alert${unreadCount === 1 ? "" : "s"} in your history.`
+            : "A clear history of alerts, updates, and recommended reviews."
+        }
+        eyebrow="Alerts"
+        title="Notifications"
+      />
 
-        <section className="grid gap-5 lg:grid-cols-[18rem_1fr]">
-          <NotificationFilterTabs filters={filters} />
-          <Card variant="elevated">
-            <CardHeader>
-              <CardTitle>Alert history</CardTitle>
-              <CardDescription>Filter by severity or read status.</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <NotificationList filters={filters} notifications={notifications} />
-            </CardContent>
-          </Card>
-        </section>
-      </main>
-    </div>
+      <section className="grid gap-6 lg:grid-cols-[minmax(0,16rem)_1fr]">
+        <NotificationFilterTabs filters={filters} />
+        <div>
+          <h2 className="sr-only">Alert history</h2>
+          <NotificationList filters={filters} notifications={notifications} />
+        </div>
+      </section>
+    </AppPageShell>
   );
 }

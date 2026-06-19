@@ -21,22 +21,28 @@ export const metadata: Metadata = {
     template: "%s | AegisLore"
   },
   description: "Digital health and account safety, calmly explained.",
-  metadataBase: new URL("https://aegislore.example")
+  metadataBase: new URL("https://aegislore.example"),
+  icons: {
+    icon: [
+      { url: "/favicon.ico", sizes: "any" },
+      { url: "/favicon-16x16.png", sizes: "16x16", type: "image/png" },
+      { url: "/favicon-32x32.png", sizes: "32x32", type: "image/png" }
+    ],
+    apple: "/apple-touch-icon.png"
+  },
+  manifest: "/site.webmanifest"
 };
 
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  colorScheme: "dark light",
-  themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#F5F2EE" },
-    { media: "(prefers-color-scheme: dark)", color: "#090B10" }
-  ]
+  colorScheme: "dark",
+  themeColor: "#211A1C"
 };
 
 export default function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" className="dark" suppressHydrationWarning>
       <body className={`${inter.variable} ${cinzel.variable}`}>
         <AppProviders>{children}</AppProviders>
       </body>

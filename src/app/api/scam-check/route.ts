@@ -24,13 +24,17 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Enter at least a few words to check." }, { status: 400 });
   }
 
-  const result = scanForScam(parsed.data.inputText, parsed.data.contentType);
-  const scan = await createScamScan({
-    userId: session.user.id,
-    contentType: parsed.data.contentType,
-    inputText: parsed.data.inputText,
-    result
-  });
+  try {
+    const result = scanForScam(parsed.data.inputText, parsed.data.contentType);
+    const scan = await createScamScan({
+      userId: session.user.id,
+      contentType: parsed.data.contentType,
+      inputText: parsed.data.inputText,
+      result
+    });
 
-  return NextResponse.json({ scan });
+    return NextResponse.json({ scan });
+  } catch {
+    return NextResponse.json({ error: "Unable to check this message right now. Please try again." }, { status: 500 });
+  }
 }

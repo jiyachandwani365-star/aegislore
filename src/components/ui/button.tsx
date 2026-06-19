@@ -1,3 +1,5 @@
+"use client";
+
 import { Slot } from "@radix-ui/react-slot";
 import { cva, type VariantProps } from "class-variance-authority";
 import type { ButtonHTMLAttributes } from "react";
@@ -11,12 +13,12 @@ const buttonVariants = cva(
       variant: {
         default: "bg-primary text-primary-foreground hover:bg-primary/90 hover:shadow-soft",
         destructive: "bg-primary text-primary-foreground hover:bg-accent hover:shadow-soft",
-        outline: "border border-input bg-background/80 hover:bg-accent hover:text-accent-foreground",
-        secondary: "bg-secondary text-secondary-foreground hover:bg-secondary/80",
-        ghost: "hover:bg-accent hover:text-accent-foreground",
+        outline: "border border-input bg-background/80 hover:bg-muted hover:text-foreground",
+        secondary: "bg-muted text-foreground hover:bg-muted/80",
+        ghost: "hover:bg-muted hover:text-foreground",
         link: "h-auto p-0 text-primary underline-offset-4 hover:underline active:scale-100",
-        quiet: "bg-transparent text-muted-foreground hover:bg-secondary hover:text-foreground",
-        success: "bg-secondary text-secondary-foreground hover:bg-accent hover:shadow-soft"
+        quiet: "bg-transparent text-muted-foreground hover:bg-muted hover:text-foreground",
+        success: "bg-muted text-foreground hover:bg-muted/80"
       },
       size: {
         default: "h-10 px-4 py-2",
@@ -39,10 +41,16 @@ export interface ButtonProps
   asChild?: boolean;
 }
 
-export function Button({ className, variant, size, asChild = false, ...props }: ButtonProps) {
+export function Button({ className, variant, size, asChild = false, type, ...props }: ButtonProps) {
   const Comp = asChild ? Slot : "button";
 
-  return <Comp className={cn(buttonVariants({ variant, size, className }))} {...props} />;
+  return (
+    <Comp
+      className={cn(buttonVariants({ variant, size }), className)}
+      type={asChild ? undefined : (type ?? "button")}
+      {...props}
+    />
+  );
 }
 
 export { buttonVariants };

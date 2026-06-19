@@ -20,18 +20,18 @@ const readOptions: Array<{ label: string; value: NotificationReadFilter }> = [
 
 export function NotificationFilterTabs({ filters }: Readonly<{ filters: NotificationFilters }>) {
   return (
-    <div className="grid gap-4 rounded-lg border bg-card p-4">
+    <div className="space-y-5">
       <FilterGroup
-        label="Severity"
-        options={severityOptions}
         activeValue={filters.severity}
         buildHref={(value) => hrefFor({ ...filters, severity: value })}
+        label="Severity"
+        options={severityOptions}
       />
       <FilterGroup
-        label="Status"
-        options={readOptions}
         activeValue={filters.read}
         buildHref={(value) => hrefFor({ ...filters, read: value })}
+        label="Status"
+        options={readOptions}
       />
     </div>
   );
@@ -57,7 +57,7 @@ function FilterGroup<TValue extends string>({
             key={option.value}
             asChild
             size="sm"
-            variant={activeValue === option.value ? "default" : "outline"}
+            variant={activeValue === option.value ? "default" : "quiet"}
           >
             <Link href={buildHref(option.value)}>{option.label}</Link>
           </Button>

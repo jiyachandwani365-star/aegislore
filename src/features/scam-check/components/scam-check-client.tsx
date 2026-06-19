@@ -20,12 +20,16 @@ const contentTypes = [
   { value: "ocr", label: "Image text", icon: ScanText }
 ] satisfies { value: ScamContentType; label: string; icon: LucideIcon }[];
 
-export function ScamCheckClient({ initialScans }: Readonly<{ initialScans: ScamScanRecord[] }>) {
+export function ScamCheckClient({
+  initialScans,
+  initialLoadError = null
+}: Readonly<{ initialScans: ScamScanRecord[]; initialLoadError?: string | null }>) {
   const [contentType, setContentType] = useState<ScamContentType>("email");
   const [inputText, setInputText] = useState("");
   const [scans, setScans] = useState(initialScans);
   const [selectedScan, setSelectedScan] = useState<ScamScanRecord | null>(initialScans.at(0) ?? null);
   const [isChecking, setIsChecking] = useState(false);
+  const [loadError] = useState(initialLoadError);
   const [error, setError] = useState<string | null>(null);
   const helperText = useMemo(() => helperFor(contentType), [contentType]);
 
@@ -48,7 +52,13 @@ export function ScamCheckClient({ initialScans }: Readonly<{ initialScans: ScamS
         body: JSON.stringify({ contentType, inputText })
       });
 
-      const data = (await response.json()) as { scan?: ScamScanRecord; error?: string };
+      let data: { scan?: ScamScanRecord; error?: string };
+
+      try {
+        data = (await response.json()) as { scan?: ScamScanRecord; error?: string };
+      } catch {
+        throw new Error("Unable to check this message. Please try again.");
+      }
 
       if (!response.ok || !data.scan) {
         throw new Error(data.error ?? "Unable to check this message.");
@@ -65,8 +75,13 @@ export function ScamCheckClient({ initialScans }: Readonly<{ initialScans: ScamS
   }
 
   return (
-    <div className="grid gap-5 xl:grid-cols-[1.05fr_0.95fr]">
-      <div className="space-y-5">
+    <div className="grid min-w-0 gap-4 sm:gap-5 xl:grid-cols-[1.05fr_0.95fr]">
+      {loadError ? (
+        <div className="xl:col-span-2 rounded-lg border border-primary/20 bg-primary/5 p-4 text-sm text-foreground">
+          {loadError}
+        </div>
+      ) : null}
+      <div className="min-w-0 space-y-4 sm:space-y-5">
         <Card variant="elevated">
           <CardHeader>
             <CardTitle>Check a message</CardTitle>
@@ -75,12 +90,12 @@ export function ScamCheckClient({ initialScans }: Readonly<{ initialScans: ScamS
           <CardContent>
             <form className="space-y-5" onSubmit={handleSubmit}>
               <Field label="What are you checking?">
-                <div className="grid grid-cols-2 gap-2 sm:grid-cols-5">
+                <div className="grid grid-cols-2 gap-1.5 sm:grid-cols-3 sm:gap-2 lg:grid-cols-5">
                   {contentTypes.map((item) => (
                     <button
                       key={item.value}
                       className={cn(
-                        "flex h-20 flex-col items-center justify-center gap-2 rounded-lg border bg-background text-sm font-medium transition-colors hover:border-ring focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+                        "flex h-14 flex-col items-center justify-center gap-1 rounded-lg border bg-background px-1 text-xs font-medium transition-colors hover:border-ring focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:h-18 sm:gap-1.5 sm:px-2 sm:text-sm lg:h-20 lg:gap-2",
                         contentType === item.value && "border-primary bg-primary/10 text-primary"
                       )}
                       onClick={() => setContentType(item.value)}
@@ -96,7 +111,7 @@ export function ScamCheckClient({ initialScans }: Readonly<{ initialScans: ScamS
               <Field label="Paste the text" description={helperText} htmlFor="scam-check-input" error={error}>
                 <Textarea
                   id="scam-check-input"
-                  className="min-h-48 resize-y"
+                  className="min-h-36 resize-y sm:min-h-48"
                   disabled={isChecking}
                   onChange={(event) => setInputText(event.target.value)}
                   placeholder="Paste the email, text message, link, post, or extracted image text here."
@@ -112,26 +127,20 @@ export function ScamCheckClient({ initialScans }: Readonly<{ initialScans: ScamS
           </CardContent>
         </Card>
 
-        <ScanHistory scans={scans} onSelect={setSelectedScan} />
+        <ScanHistory scans={scans} onSelect={setSelectedScan} selectedScanId={selectedScan?.id} />
       </div>
 
       {selectedScan ? (
-        <ResultsView scan={selectedScan} />
+        <div className="min-w-0">
+          <ResultsView scan={selectedScan} />
+        </div>
       ) : (
-        <Card>
-          <CardHeader>
-            <CardTitle>Results view</CardTitle>
-            <CardDescription>Your result will appear here after the first check.</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="rounded-lg border border-dashed bg-background p-8 text-center">
-              <p className="font-medium">Ready when you are</p>
-              <p className="mt-2 text-sm leading-6 text-muted-foreground">
-                Paste a suspicious message or link to see the risk level, warning signs, and safest next step.
-              </p>
-            </div>
-          </CardContent>
-        </Card>
+        <div className="min-w-0 rounded-lg border border-dashed bg-background p-5 text-center sm:p-8">
+          <p className="font-medium">Ready when you are</p>
+          <p className="mt-2 text-sm leading-6 text-muted-foreground">
+            Paste a suspicious message or link to see the risk level, warning signs, and safest next step.
+          </p>
+        </div>
       )}
     </div>
   );

@@ -29,14 +29,9 @@ export async function SiteHeader() {
               <Link href="/dashboard">Dashboard</Link>
             </Button>
           ) : (
-            <>
-              <Button asChild size="sm" variant="quiet">
-                <Link href="/sign-in">Sign in</Link>
-              </Button>
-              <Button asChild size="sm" variant="outline">
-                <Link href="/signup">Sign up</Link>
-              </Button>
-            </>
+            <Button asChild size="sm" variant="outline">
+              <Link href="/sign-in">Sign in</Link>
+            </Button>
           )}
         </div>
       </div>

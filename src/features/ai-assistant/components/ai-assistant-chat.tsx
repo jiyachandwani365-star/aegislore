@@ -1,11 +1,9 @@
 "use client";
 
-import { Send, Sparkles } from "lucide-react";
+import { Loader2, Send } from "lucide-react";
 import { useState, type FormEvent } from "react";
 
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 import { suggestedPrompts, type ChatMessage } from "@/features/ai-assistant/types";
@@ -80,16 +78,14 @@ export function AiAssistantChat() {
   }
 
   return (
-    <Card variant="elevated" className="h-full">
-      <CardHeader>
-        <Badge className="mb-3 w-fit" variant="info">
-          <Sparkles aria-hidden="true" />
-          Security Coach
-        </Badge>
-        <CardTitle className="text-xl">Security Coach</CardTitle>
-        <CardDescription>Personal guidance based on your score, findings, and progress.</CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-4">
+    <div className="rounded-lg border bg-card">
+      <div className="border-b px-4 py-4 sm:px-5">
+        <p className="text-caption font-medium uppercase tracking-[0.14em] text-primary">Security coach</p>
+        <p className="mt-2 text-sm text-muted-foreground">
+          Personal guidance based on your score, findings, and progress.
+        </p>
+      </div>
+      <div className="space-y-4 p-4 sm:p-5">
         <div className="flex flex-wrap gap-2">
           {suggestedPrompts.map((prompt) => (
             <Button
@@ -112,17 +108,15 @@ export function AiAssistantChat() {
               className={cn(
                 "max-w-[88%] rounded-lg px-3 py-2 text-sm leading-6",
                 message.role === "assistant"
-                  ? "bg-secondary text-secondary-foreground"
-                  : "ml-auto bg-primary text-primary-foreground"
+                  ? "bg-muted text-foreground"
+                  : "ml-auto border border-primary/15 bg-background text-foreground"
               )}
             >
               {message.content}
             </div>
           ))}
           {isLoading ? (
-            <div className="max-w-[88%] rounded-lg bg-secondary px-3 py-2 text-sm text-muted-foreground">
-              Thinking...
-            </div>
+            <div className="max-w-[88%] rounded-lg bg-muted px-3 py-2 text-sm text-muted-foreground">Thinking...</div>
           ) : null}
         </div>
 
@@ -137,12 +131,12 @@ export function AiAssistantChat() {
             placeholder="Ask about your score or next step..."
             value={input}
           />
-          <Button className="w-full" disabled={isLoading || !input.trim()} type="submit">
-            <Send aria-hidden="true" />
-            Send
+          <Button className="w-full sm:w-auto" disabled={isLoading || !input.trim()} type="submit">
+            {isLoading ? <Loader2 aria-hidden="true" className="animate-spin" /> : <Send aria-hidden="true" />}
+            {isLoading ? "Sending..." : "Send"}
           </Button>
         </form>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }

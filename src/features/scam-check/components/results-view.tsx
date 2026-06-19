@@ -7,7 +7,7 @@ import type { ScamScanRecord } from "@/features/scam-check/types";
 
 export function ResultsView({ scan }: Readonly<{ scan: ScamScanRecord }>) {
   return (
-    <Card variant="elevated">
+    <Card variant="elevated" className="min-w-0 overflow-hidden">
       <CardHeader>
         <CardTitle>Results</CardTitle>
         <CardDescription>Plain-language guidance for this message.</CardDescription>
@@ -18,7 +18,7 @@ export function ResultsView({ scan }: Readonly<{ scan: ScamScanRecord }>) {
         <Alert variant={scan.riskLevel === "Safe" || scan.riskLevel === "Low" ? "success" : "warning"}>
           <Lightbulb aria-hidden="true" />
           <AlertTitle>What this means</AlertTitle>
-          <AlertDescription>{scan.explanation}</AlertDescription>
+          <AlertDescription className="break-words">{scan.explanation}</AlertDescription>
         </Alert>
 
         <section className="rounded-lg border bg-background p-4" aria-label="Recommended action">
@@ -26,7 +26,7 @@ export function ResultsView({ scan }: Readonly<{ scan: ScamScanRecord }>) {
             <CheckCircle2 aria-hidden="true" className="mt-0.5 size-5 text-primary" />
             <div>
               <h3 className="font-medium">Recommended action</h3>
-              <p className="mt-2 text-sm leading-6 text-muted-foreground">{scan.recommendedAction}</p>
+              <p className="mt-2 break-words text-sm leading-6 text-muted-foreground">{scan.recommendedAction}</p>
             </div>
           </div>
         </section>
@@ -41,7 +41,7 @@ export function ResultsView({ scan }: Readonly<{ scan: ScamScanRecord }>) {
               {scan.indicators.map((indicator) => (
                 <div key={indicator.label} className="rounded-lg border bg-surface p-3">
                   <p className="font-medium">{indicator.label}</p>
-                  <p className="mt-1 text-sm leading-6 text-muted-foreground">{indicator.description}</p>
+                  <p className="mt-1 break-words text-sm leading-6 text-muted-foreground">{indicator.description}</p>
                 </div>
               ))}
             </div>

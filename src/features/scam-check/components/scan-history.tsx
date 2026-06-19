@@ -2,14 +2,17 @@ import { Clock3 } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { cn } from "@/lib/utils";
 import type { ScamScanRecord } from "@/features/scam-check/types";
 
 export function ScanHistory({
   scans,
-  onSelect
+  onSelect,
+  selectedScanId
 }: Readonly<{
   scans: ScamScanRecord[];
   onSelect(scan: ScamScanRecord): void;
+  selectedScanId?: string;
 }>) {
   return (
     <Card>
@@ -23,19 +26,25 @@ export function ScanHistory({
             {scans.map((scan) => (
               <button
                 key={scan.id}
-                className="w-full rounded-lg border bg-background p-4 text-left transition-colors hover:border-ring focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                className={cn(
+                  "w-full rounded-lg border bg-background p-4 text-left transition-colors hover:border-ring focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+                  selectedScanId === scan.id && "border-primary bg-primary/5"
+                )}
                 onClick={() => onSelect(scan)}
                 type="button"
               >
-                <div className="flex items-start justify-between gap-3">
-                  <div className="min-w-0">
-                    <p className="truncate font-medium">{preview(scan.inputText)}</p>
+                <div className="flex items-start justify-between gap-2 sm:gap-3">
+                  <div className="min-w-0 flex-1">
+                    <p className="break-words font-medium">{preview(scan.inputText)}</p>
                     <p className="mt-2 flex items-center gap-2 text-caption text-muted-foreground">
-                      <Clock3 aria-hidden="true" className="size-3.5" />
+                      <Clock3 aria-hidden="true" className="size-3.5 shrink-0" />
                       {formatDate(scan.createdAt)}
                     </p>
                   </div>
-                  <Badge variant={scan.riskLevel === "Safe" || scan.riskLevel === "Low" ? "success" : "warning"}>
+                  <Badge
+                    className="shrink-0"
+                    variant={scan.riskLevel === "Safe" || scan.riskLevel === "Low" ? "success" : "warning"}
+                  >
                     {scan.riskLevel}
                   </Badge>
                 </div>

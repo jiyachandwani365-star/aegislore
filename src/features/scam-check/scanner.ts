@@ -11,51 +11,84 @@ const detectors: Detector[] = [
   {
     label: "Urgent pressure",
     description: "The message pushes you to act immediately.",
-    weight: 18,
-    matches: (text) => /\b(urgent|immediately|right now|act now|limited time|expires today|final notice)\b/i.test(text)
+    weight: 20,
+    matches: (text) =>
+      /\b(urgent|urgently|immediately|right now|act now|limited time|expires today|final notice|don't wait|do not wait|hurry|asap|within 24 hours)\b/i.test(
+        text
+      )
   },
   {
     label: "Threatening language",
     description: "The message says something bad will happen if you do not respond.",
-    weight: 22,
-    matches: (text) => /\b(suspended|locked|arrest|legal action|penalty|account closed|terminated|blocked)\b/i.test(text)
+    weight: 24,
+    matches: (text) =>
+      /\b(suspended|locked|arrest|legal action|penalty|account closed|terminated|blocked|unauthorized|compromised)\b/i.test(
+        text
+      )
   },
   {
     label: "Unexpected reward",
     description: "The message offers a prize, refund, grant, or gift you were not expecting.",
-    weight: 16,
-    matches: (text) => /\b(prize|winner|gift card|reward|refund|bonus|grant|free money|cashback)\b/i.test(text)
+    weight: 20,
+    matches: (text) =>
+      /\b(prizes?|winners?|won|gift cards?|rewards?|refunds?|bonuses?|grants?|free money|cashback|claim(?:ing)?|cash prize|lottery|inheritance)\b/i.test(
+        text
+      )
   },
   {
     label: "Sign-in details requested",
     description: "The message asks for a password, code, or account sign-in information.",
-    weight: 28,
-    matches: (text) => /\b(password|passcode|verification code|one-time code|otp|login|sign in|confirm your account)\b/i.test(text)
+    weight: 32,
+    matches: (text) =>
+      /\b(passwords?|passcodes?|verification codes?|one-time codes?|otps?|2fa codes?|security codes?|authentication codes?|pin codes?|logins?|sign[\s-]?in|confirm your account|share your code|send (us )?your (otp|code))\b/i.test(
+        text
+      )
   },
   {
     label: "Money requested",
     description: "The message asks you to pay, transfer money, or buy something unusual.",
-    weight: 26,
-    matches: (text) => /\b(wire transfer|bank transfer|crypto|bitcoin|gift card|payment|pay now|invoice|deposit)\b/i.test(text)
+    weight: 28,
+    matches: (text) =>
+      /\b(wire transfers?|bank transfers?|crypto|bitcoin|gift cards?|payments?|pay now|invoices?|deposits?|send money|transfer funds)\b/i.test(
+        text
+      )
+  },
+  {
+    label: "Financial incentive",
+    description: "The message promises a large payout, cash reward, or unrealistic financial gain.",
+    weight: 22,
+    matches: (text) =>
+      /\b(get|receive|earn|win|claim)\b[^.]{0,30}\$?\d{3,}|\b(up to|worth|valued at)\b[^.]{0,20}\$?\d{3,}|\$\d{3,}(?:,\d{3})*|\b\d{4,}\s*\$|\b100,?000\b/i.test(
+        text
+      )
+  },
+  {
+    label: "Link prompt",
+    description: "The message tells you to click or open a link, which is a common phishing tactic.",
+    weight: 20,
+    matches: (text) => hasLinkPrompt(text)
   },
   {
     label: "Suspicious link",
     description: "The message includes a link that should be checked before opening.",
-    weight: 20,
+    weight: 24,
     matches: (text) => hasSuspiciousLink(text)
   },
   {
     label: "Pretends to be someone trusted",
     description: "The message claims to be from a bank, delivery company, workplace, or support team.",
-    weight: 18,
-    matches: (text) => /\b(bank|paypal|apple|microsoft|google|amazon|netflix|delivery|support team|security team|manager|boss)\b/i.test(text)
+    weight: 20,
+    matches: (text) =>
+      /\b(bank|paypal|apple|microsoft|google|amazon|netflix|delivery|support teams?|security teams?|managers?|boss|irs|government|fedex|ups|dhl)\b/i.test(
+        text
+      )
   }
 ];
 
 export function scanForScam(input: string, contentType: ScamContentType): ScamCheckResult {
   const text = input.trim();
   const detected = detectors.filter((detector) => detector.matches(text));
-  const typeAdjustment = contentType === "url" && hasAnyLink(text) ? 8 : 0;
+  const typeAdjustment = contentType === "url" && hasAnyLink(text) ? 10 : 0;
   const score = Math.min(100, detected.reduce((sum, detector) => sum + detector.weight, 0) + typeAdjustment);
   const riskLevel = riskFromScore(score, detected);
   const confidenceScore = confidenceFrom(text, detected);
@@ -77,23 +110,36 @@ function toIndicator(detector: Detector): ScamIndicator {
 }
 
 function riskFromScore(score: number, indicators: Detector[]): ScamRiskLevel {
-  if (indicators.some((indicator) => indicator.label === "Sign-in details requested") && score >= 48) {
+  const labels = new Set(indicators.map((indicator) => indicator.label));
+  const hasCredentialRequest = labels.has("Sign-in details requested");
+  const hasLinkPrompt = labels.has("Link prompt") || labels.has("Suspicious link");
+  const hasRewardSignal = labels.has("Unexpected reward") || labels.has("Financial incentive");
+
+  if (hasCredentialRequest && (hasLinkPrompt || hasRewardSignal)) {
+    return score >= 70 ? "Critical" : "High";
+  }
+
+  if (hasCredentialRequest && score >= 32) {
+    return score >= 64 ? "Critical" : "High";
+  }
+
+  if (hasLinkPrompt && hasRewardSignal) {
+    return score >= 56 ? "High" : "Medium";
+  }
+
+  if (score >= 68) {
     return "Critical";
   }
 
-  if (score >= 72) {
-    return "Critical";
-  }
-
-  if (score >= 50) {
+  if (score >= 46) {
     return "High";
   }
 
-  if (score >= 30) {
+  if (score >= 26) {
     return "Medium";
   }
 
-  if (score >= 12) {
+  if (score >= 8) {
     return "Low";
   }
 
@@ -134,10 +180,18 @@ function hasAnyLink(text: string) {
   return /(https?:\/\/|www\.|[a-z0-9-]+\.[a-z]{2,})/i.test(text);
 }
 
+function hasLinkPrompt(text: string) {
+  return (
+    hasAnyLink(text) ||
+    /\b(click|tap|open|follow|visit)\b[^.]{0,24}\b(link|url|here|below|attachment)\b/i.test(text) ||
+    /\bclick\s+link\b/i.test(text)
+  );
+}
+
 function hasSuspiciousLink(text: string) {
   if (!hasAnyLink(text)) {
     return false;
   }
 
-  return /(bit\.ly|tinyurl|t\.co|goo\.gl|is\.gd|ow\.ly|click|verify|secure|login|account|[0-9]{1,3}(?:\.[0-9]{1,3}){3})/i.test(text);
+  return /(bit\.ly|tinyurl|t\.co|goo\.gl|is\.gd|ow\.ly|[0-9]{1,3}(?:\.[0-9]{1,3}){3})/i.test(text);
 }

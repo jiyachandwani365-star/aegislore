@@ -29,5 +29,5 @@ export function AlertTitle({ className, ...props }: HTMLAttributes<HTMLHeadingEl
 }
 
 export function AlertDescription({ className, ...props }: HTMLAttributes<HTMLDivElement>) {
-  return <div className={cn("text-muted-foreground", className)} {...props} />;
+  return <div className={cn("text-muted-foreground dark:text-foreground/85", className)} {...props} />;
 }
