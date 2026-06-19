@@ -1,3 +1,4 @@
+import { SiteFooter } from "@/components/layout/site-footer";
 import type { Metadata, Viewport } from "next";
 import { Cinzel, Inter } from "next/font/google";
 import type { ReactNode } from "react";
@@ -44,7 +45,11 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
   return (
     <html lang="en" className="dark" suppressHydrationWarning>
       <body className={`${inter.variable} ${cinzel.variable}`}>
-        <AppProviders>{children}</AppProviders>
+        <AppProviders>
+          {children}
+        </AppProviders>
+
+        <SiteFooter />
       </body>
     </html>
   );
